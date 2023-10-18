@@ -20,9 +20,12 @@ enum m_sel_tradeType {
 
 input m_sel_tradeType usr_trade = buy;
 input double rsk_prc = 0.02;
-input double MyDesiredLotSize = 0.1;
+input double MyDesiredLotSize = 0.2;
+input int FirstNumProfit = 20;
+input int StopLossPip = 10;
 string sel_tradeType = "buy";
 double price = Bid;
+input double MaximumSpread = 3.0;
 
 void OnStart()
   {
@@ -35,17 +38,22 @@ void OnStart()
                sel_tradeType = "sell";
                price = Ask;
              }
-     double stopLossValue = StopRange(sel_tradeType);
-     double takeProfit =  ProfitRange(sel_tradeType);
+     double stopLossValue = StopRange(sel_tradeType, StopLossPip);
+     double takeProfit =  ProfitRange(sel_tradeType, FirstNumProfit);
     double lotSize = OptimalLotSize(rsk_prc, price, stopLossValue, MyDesiredLotSize);
-
-    if(executeTrade(sel_tradeType, lotSize, stopLossValue, takeProfit))
+    double spread = (Ask - Bid)/ GetPipValue();
+    if(spread < MaximumSpread)
       {
-        Alert("Success");
+          if(executeTrade(sel_tradeType, lotSize, stopLossValue, takeProfit))
+         {
+           Alert("Success");
+         }else
+            {
+              Alert("Error unable to enter trade");
+            }
       }else
          {
-           Alert("Error unable to enter trade");
-         }
-         
+           Alert("Spread is too high");
+         }      
   }
 //+------------------------------------------------------------------+

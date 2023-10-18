@@ -26,9 +26,9 @@ double OptimalLotSize(double maxRiskPrc, double entryPrice, double stopLoss, dou
 }
 
 
-double StopRange(string tradeType){
+double StopRange(string tradeType, int stopPips){
 
-  double pips = 30 * GetPipValue();
+  double pips = stopPips * GetPipValue();
   
   if(tradeType == "sell"){
       return NormalizeDouble(Ask + pips, Digits);
